@@ -53,7 +53,7 @@ class UpdateUser(FormView):
     #         me.avatar = form.files['avatar']
     #     me.save()
     #     return redirect('index')
-    def post(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         """
         Handle POST requests: instantiate a form instance with the passed
         POST variables and then check if it's valid.

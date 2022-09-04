@@ -4,9 +4,9 @@ from PIL import Image
 
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=150, blank=True)
-    last_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField(unique=True, blank=True)
+    first_name = models.CharField(max_length=150, blank=True, null=True)
+    last_name = models.CharField(max_length=150, blank=True, null=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
     date_joined = models.DateField(auto_now_add=True)
     avatar = models.ImageField(upload_to='users/', blank=True, null=True)
     bio = models.CharField(max_length=255, blank=True, null=True)

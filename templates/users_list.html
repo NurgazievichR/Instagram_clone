@@ -1,0 +1,185 @@
+{% extends 'include/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container_featured">
+    <ul class="wrapper_featured">
+{% if title != 'Hashtags' %}
+    
+   
+        {% if title == 'Followers' %}
+        {% if followers %}
+        {% for follow in followers %}        
+        <a style="text-decoration: none; color:black;" href="{% url 'profile' follow.from_user.username %}">
+            <li class="account_item">
+                <div class="img_part">
+                    <span>
+                        {% if follow.from_user.avatar %}
+                        <img src="{{ follow.from_user.avatar.url }}" alt="avatar_img">
+                        {% else %}
+                        <img src="{% static 'assets1/default-user.png' %}" alt="avatar_img">
+                        {% endif %}
+                    </span>
+                </div>
+                <div style="width: 1050px;" class="name_part">              
+                    <h4>{{follow.from_user.username}}</h4>     
+            <span>
+            {% if follow.from_user.first_name %}{{follow.from_user.first_name}} {% endif %} {% if follow.from_user.last_name %}{{follow.from_user.last_name}}{% endif %}
+            </span>
+                </div>
+            </li>
+            </a>
+            {% endfor %}
+        {% else %}
+        Пользователи не найдены
+        {% endif %}
+        {% elif title == 'Followings' %}
+        {% if followings %}
+        {% for follow in followings %}        
+        <a style="text-decoration: none; color:black;" href="{% url 'profile' follow.to_user.username %}">
+            <li class="account_item">
+                <div class="img_part">
+                    <span>
+                        {% if follow.to_user.avatar %}
+                        <img src="{{ follow.to_user.avatar.url }}" alt="avatar_img">
+                        {% else %}
+                        <img src="{% static 'assets1/default-user.png' %}" alt="avatar_img">
+                        {% endif %}
+                    </span>
+                </div>
+                <div style="width: 1050px;" class="name_part">              
+                    <h4>{{follow.to_user.username}}</h4>     
+            <span>
+            {% if follow.to_user.first_name %}{{follow.to_user.first_name}} {% endif %} {% if follow.to_user.last_name %}{{follow.to_user.last_name}}{% endif %}
+            </span>
+                </div>
+            </li>
+            </a>
+            {% endfor %}
+        {% else %}
+        Пользователи не найдены
+        {% endif %}  
+        {% else %}
+        {% if accounts %}
+
+        {% for account in accounts %}
+        <a style="text-decoration: none; color:black;" href="{% url 'profile' account.username %}">
+        <li class="account_item">
+            <div class="img_part">
+                <span>
+                    {% if account.avatar %}            
+                    <img src="{{ account.avatar.url }}" alt="avatar_img">
+                    {% else %}
+                    <img src="{% static 'assets1/default-user.png' %}" alt="avatar_img">
+                        
+                    {% endif %}
+                </span>
+            </div>
+            <div style="width: 1050px;" class="name_part">          
+                <h4>{{account.username}}</h4>
+        <span>
+        {% if account.first_name %}{{account.first_name}}{% endif %} {% if account.last_name %}{{account.last_name}}{% endif %}
+        </span>
+            </div>
+        </li>
+        </a>
+        {% endfor %}
+        {% else %}
+            По вашему  запросу ничего не найдено
+        {% endif %}
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {% endif %}
+
+
+        {% else %}
+ 
+        
+
+{% if tags %}
+    
+{% for tag in tags %}
+    
+<a style="text-decoration: none; color:black;" href="{% url 'hashtags' tag.title %}">
+    <li class="account_item">
+            <div class="img_part">
+                <span>
+                    <img src="{% static 'assets1/unnamed.png' %}" alt="avatar_img">
+                    
+                </span>
+            </div>
+            <div style="width: 1050px;" class="name_part">          
+                <h4>#{{tag}}</h4>
+
+                <span> There are {{tag.post.all | length}} posts with this hashtag
+                     </span>
+
+
+
+            </div>
+        </li>
+    </a>
+    
+    {% endfor %}
+
+{% else %}
+По вашему  запросу ничего не найдено
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+        {% endif %} 
+
+
+
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+<!-- HTML !-->
+

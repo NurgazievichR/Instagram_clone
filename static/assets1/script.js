@@ -148,3 +148,10 @@ postsContent.forEach(post => {
         }
     }
 });
+
+// document.addEventListener('load')
+
+// window.addEventListener('scroll', () => {
+//     console.log(window.scrollX);
+// })
+

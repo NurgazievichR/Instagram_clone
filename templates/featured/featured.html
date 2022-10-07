@@ -1,0 +1,163 @@
+{% extends 'include/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Metadata -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="author" content="George W. Park">
+    <meta name="description"
+          content="This project demonstrates how CSS grid (with flexbox and float fallback) can be used to re-create the layout of an Instagram profile page.">
+
+    <!-- Title -->
+    <title>{{title}}</title>
+
+    <!-- External CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets3/css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'assets3/css/styles.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+
+</head>
+
+
+<body>
+
+<header>
+    <br><br><br>
+    <div class="container">
+
+        <div class="profile">
+            {% if title == 'Saved' %}
+
+            <span style="font-size: 20px;">Saved</span>
+
+            {% else %}
+
+            <strong style="font-size: 20px;">{{title}}</strong>
+            {% endif %}
+
+        </div>
+<!-- End of profile section -->
+
+    </div>
+    <!-- End of container -->
+
+</header>
+
+<main>
+
+    <div class="container">
+        <div class="gallery">
+
+
+
+{% if title == 'Saved' %}
+    
+
+{% for save in posts%}
+<div class="post">
+    {% for image in save.post.post_images.all %}
+        {% if forloop.counter < 2    %}
+        <a href="{% url 'saved_posts_detail' %}"><img src="{{ image.image.url }}" alt="post img"> </a>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% else %}
+
+
+
+
+
+{% for post in h_posts%}
+<div class="post">
+        {% for picture in post.post_images.all %}
+            
+        {% if forloop.counter < 2    %}
+        <a href="{% url 'detail_post_view' post.id %}"><img src="{{ picture.image.url }}" alt="post img"> </a>
+        {% endif %}
+        
+        {% endfor %}
+</div>
+{% endfor %}
+
+
+
+
+
+    
+{% endif %}    
+
+
+
+
+
+        </div>
+        <!-- End of gallery -->
+    
+        <form method="post" style="width: 100%; display: flex; justify-content: center;">
+            {% csrf_token %}
+            <button
+                style="padding: 12px 16px; font-size: 16px; border: none; border-radius: 8px;"
+            >Show More...</button>
+        </form>
+
+    </div>
+    <!-- End of container -->
+    <script src="../../static/js/profile.js"></script>
+</main>
+
+<footer>
+    <div class="container">
+        <nav class="footer-nav">
+            <ul>
+                <li>
+                    <a href="#">About us</a>
+                </li>
+                <li>
+                    <a href="#">Support</a>
+                </li>
+                <li>
+                    <a href="#">Press</a>
+                </li>
+                <li>
+                    <a href="#">Api</a>
+                </li>
+                <li>
+                    <a href="#">Jobs</a>
+                </li>
+                <li>
+                    <a href="#">Privacy</a>
+                </li>
+                <li>
+                    <a href="#">Terms</a>
+                </li>
+                <li>
+                    <a href="#">Directory</a>
+                </li>
+                <li>
+                    <a href="#">Profiles</a>
+                </li>
+                <li>
+                    <a href="#">Hashtags</a>
+                </li>
+                <li>
+                    <a href="#">Languages</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="copyright-notice">
+            &copy 2019 Instagram
+        </div>
+    </div>
+</footer>
+
+
+{% endblock content %}

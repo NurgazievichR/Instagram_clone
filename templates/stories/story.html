@@ -1,0 +1,48 @@
+{% extends 'include/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="slideshow-container">
+
+  <!-- Full-width images with number and caption text -->
+
+
+
+  {% for story in stories %}
+
+{% if story.file.url|slice:'-3:' in 'mp4mov' %}
+<video height="820px" autoplay controls src="{{ story.file.url }}"></video>
+  
+{% else %}
+<img width="550px" src="{{ story.file.url }}" alt="...">
+  
+  {% endif %}
+{% if story.user == request.user %}
+<form method="POST">
+  {% csrf_token %}
+<button value="{{story.id}}" name="delete_story">Delete</button>
+</form>
+  
+{% endif %}
+
+
+{% endfor %}
+
+
+
+
+<nav>
+
+  
+  <ul style="display: flex;">
+    {% for p in page_obj.paginator.page_range %}
+      <li style="margin-left: 20px; list-style-type: none; font-size:large;">
+        <a href="?page={{ p }}">{{ p }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+
+
+{% endblock %}

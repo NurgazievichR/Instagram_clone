@@ -1,0 +1,25 @@
+{% extends 'include/base.html' %}
+{% block content %}
+
+
+
+<form class="forum" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h1>Добавление нового сторис</h1>
+    <hr>
+
+    <label for="id_image">
+        Видео:
+        <input type="file" name="video" accept="image/*" required="True"  id="id_image"> <br>
+    </label>
+    <button type="submit">Sent</button>
+</form>
+
+
+
+
+
+
+
+{% endblock %}

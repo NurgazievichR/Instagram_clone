@@ -1,0 +1,106 @@
+ {% extends 'include//base.html' %}
+
+ {% block content %}
+    <div class="container">
+        <article  class="post" style="width: 600px;margin-left:300px;margin-top:70px; margin-bottom:17px;">
+            <div class="post__header">
+                
+                    <div class="post__profile">
+                        {% if post.owner.avatar %}
+                        <a href="{% url 'profile' post.owner %}" class="post__avatar">
+                            <img src="{{ post.owner.avatar.url }}" alt="User Picture">
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'profile' post.owner.username %}" class="post__user">{{ post.owner.username }}</a>
+                    </div>
+ 
+                      
+            </div>
+        
+            <div class="post__content">
+                <div class="post__medias">
+                    {% for picture in post.post_images.all %}
+                        
+                    <img  class="post__media" src="{{ picture.image.url }}" alt="Post Content">
+                    
+                    {% endfor %}
+                    
+                </div>
+            </div>  
+        
+            <div class="post__footer">    
+                
+                
+                
+                
+                
+                
+                
+                <form method="POST">
+                    {% csrf_token %}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">#</span>
+                    </div>
+                    <input name="tag_name" type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                    <button  name="add_tag" style="height: 35px; border:0px;">
+
+                        <div class="input-group-append">
+                            <span class="input-group-text">➕</span>
+                        </div>
+                    </button>
+                    </div>
+                  
+                </form>
+
+
+
+
+
+                <p style="font-size: 13px;">
+                    <div style="display: flex;">
+                        {% for tag in post.post_tags.all %}
+<form method="POST">
+{% csrf_token %}
+    <button value="{{tag.id}}" name="tag_delete" style="font-size: 13px; border-color:#337ab7 ; color: #337ab7;background-color: #f5f8fb; ;border-radius: 3px;display: inline-block; margin-bottom: 7px; margin-right: 5px;" id="roma">
+        {{tag}} ✖
+    </button> 
+</form>
+    
+                        {% endfor %}
+                    </div>
+
+                       
+                        
+                    </p>
+                    
+                    
+                    
+                    
+                    
+                    <form style="width:700px;" method="POST">
+                        {% csrf_token %}
+                    <div style="padding-bottom:30px;" class="post__description">
+                        <span>
+    
+                            <label style="margin-right:10px;" >Title:</label>
+                            <input style="width: 520px;" type="text" value="{{post.title}}" name="title" maxlength="50" id="id_title">
+    
+    
+    
+                        </span>
+                    </div>
+                    <span class="post__date-time">{{ post.create_at|date:"d M Y" }}</span><br>
+                    <button name="update_post" type="submit" class="btn btn-warning" style="margin-bottom: 7px; width:83%;">Update Post</button>
+                    </form>
+
+
+
+                  
+
+                </div>
+            </article>
+        </div>
+    </div>
+
+ {% endblock %}

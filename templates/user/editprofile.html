@@ -13,6 +13,8 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <script src="https://kit.fontawesome.com/fc1e235b2e.js"></script>
   <link rel="stylesheet" href="{% static 'assets2/style.css' %}">
+  <link rel="stylesheet" href="{% static 'stylesmy.css' %}">
+
   <title>Instagram Login Form</title>
 </head>
 
@@ -21,14 +23,20 @@
   <div id="wrapper">
     <div class="container">
       <div class="phone-app-ddemo"></div>
-      <div class="form-data">
-        <form action="" method="PATCH" enctype="multipart/form-data">
+      <div class="form-data forumData">
+        <form action="" method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
           <div class="logo">
             <h3 style="padding: 20px; font-size: 20px;">Edit Profile</h3>
           </div>
+          <p>
+            <label for="id_username">Username:</label>  
+            <input type="text" value="{{request.user.username}}" name="username" maxlength="50" id="id_username">
+
+          </p>
+{{error}}            
+{{form.as_p}}
           
-          {{form.as_p}}
 
 
       

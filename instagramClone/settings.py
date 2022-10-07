@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5p)x*nda!)=tw_&#ne=j$sga%t^tf9i1olp6_$1(hc_(%7amq!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 
 # Application definition
@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'apps.comment',
     'apps.like',
     'apps.save',
+    'apps.follower',
+    'apps.direct',
+    'apps.story',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.user.middleware.ActivityMiddleware'
 ]
 
 ROOT_URLCONF = 'instagramClone.urls'
@@ -135,3 +139,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.CustomUser'
+
+LOGIN_URL = '/login/'

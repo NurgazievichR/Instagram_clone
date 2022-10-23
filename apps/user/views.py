@@ -1,7 +1,6 @@
 from django import forms
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.views.generic import CreateView, FormView, DetailView, RedirectView, ListView
+from django.views.generic import CreateView, FormView, DetailView, RedirectView
 from django.views.generic.edit import BaseFormView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse, reverse_lazy
@@ -21,13 +20,14 @@ from apps.follower.models import Follower
 from apps.like.models import Like
 from apps.post.views import PostListView
 from apps.save.models import Save
+from apps.user.tasks import complaint
 from apps.user.utils import clean_username, transliterate
 from apps.post.models import Post, PostImage, Tag
 from apps.user.forms import UserRegistrationForm, UserModificationForm
 from apps.user.models import CustomUser
 from apps.post.forms import AddPostForm
 from apps.user.utils import get_id_by_username
-from apps.post.mixins import SearchMixin, LikeAndSaveMixin
+from apps.post.mixins import SearchMixin
 
 
 #Тут я наследовался от CreateView чтобы создавать нового пользователя в базе данных
@@ -101,7 +101,6 @@ class UpdateUser(FormView):
             finding_word = request.GET.get('search_word').split()[0]
             if finding_word[0]=='#':
                 tags = Tag.objects.filter(Q(title__startswith=finding_word[1:]))
-                print(tags)
                 return render(request, 'users_list.html', {'tags':tags, 'title':'Hashtags'})
             else:
                 if finding_word != '':
@@ -243,6 +242,11 @@ class ProfilePostsView(PostListView):
                 Like.objects.create(post=post, user=user)
             else:
                 Like.objects.filter(post=post, user=user).delete()
+
+        if 'complaint' in request.POST:
+            id = request.POST['complaint']
+            request_user = request.user.username
+            complaint.delay(id, request_user)
         return redirect('profileDetailPosts', self.kwargs['username'])
 
 
@@ -250,3 +254,7 @@ class ProfilePostsView(PostListView):
 
 def page_not_found(request, exception):
     return render(request, 'page_not_found/p404.html', status=404)
+
+
+
+

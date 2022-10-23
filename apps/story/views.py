@@ -4,6 +4,7 @@ from django.views import generic
 from apps.story.models import Story
 from apps.user.models import CustomUser
 from apps.user.utils import get_id_by_username
+from apps.user.tasks import delete_story
 
 
 
@@ -21,7 +22,10 @@ class StoriesView(generic.ListView):
         if 'delete_story' in request.POST:
             story_id = request.POST['delete_story']
             Story.objects.get(id=story_id).delete()
-        return redirect('index')
+            if len(Story.objects.filter(user=self.request.user)) > 0:
+                return redirect('story', self.request.user)
+            else:
+                return redirect('index')
 
 
 
@@ -31,7 +35,8 @@ def ImageOrVideo(request):
 
 
 def addVideoStory(request):
-    if request.method == 'POST' and str(request.FILES['video']).split('.')[1] in ['mp4', 'mov','jpg', 'jpeg']:
+    if request.method == 'POST' and str(request.FILES['video']).split('.')[1] in ['mp4', 'mov','jpg', 'jpeg','png']:
         story = Story.objects.create(user=request.user, file=request.FILES['video'])   
+        delete_story.delay(id_story=story.id)
         return redirect('index')
     return render(request, 'stories/add_video_story.html')

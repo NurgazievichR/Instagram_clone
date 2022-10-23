@@ -16,6 +16,8 @@ class ActivityMiddleware:
         Activity.objects.all().update(all_time=F('all_time')+1)
         if last[0].date != timezone.now().date():
             Activity.objects.create(today=0, all_time=last[0].all_time, date=timezone.now().date())
+
+        
     
     def last_activity(self, request):
         user = CustomUser.objects.filter(username=request.user)

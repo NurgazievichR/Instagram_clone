@@ -2,7 +2,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator 
 from django.utils import timezone
@@ -13,7 +12,7 @@ from apps.save.models import Save
 from apps.user.models import CustomUser
 from apps.follower.models import Follower
 from apps.post.mixins import SearchMixin, LikeAndSaveMixin
-from apps.user.utils import paginate_posts
+from apps.user.tasks import complaint
 from apps.comment.models import Comment
 
 
@@ -31,9 +30,6 @@ class PostListView(SearchMixin, LikeAndSaveMixin, generic.ListView):
     context_object_name = 'posts'
     ordering = ('-create_at')
 
-    
-
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         subscriptions = Follower.objects.filter(from_user=self.request.user)
@@ -44,48 +40,45 @@ class PostListView(SearchMixin, LikeAndSaveMixin, generic.ListView):
         context['LikedByUserPosts'] = Like.objects.filter(user=self.request.user)
         context['SavedByUserPosts'] = Save.objects.filter(user=self.request.user)
         context['rec_users'] = CustomUser.objects.exclude(id__in = ids).order_by('-views')[:4]
+
+        
         return context
 
     def post(self, request, *args, **kwargs):
         if 'follow_to' in request.POST:
-            print(request.POST['follow_to'])
             Follower.objects.create(from_user=request.user, to_user=CustomUser.objects.get(username=request.POST['follow_to']))
+        if 'complaint' in request.POST:
+            id = request.POST['complaint']
+            request_user = request.user.username
+            complaint.delay(id, request_user)
         return super().post(request, *args, **kwargs)
+
+
 
 class FeaturedPosts(SearchMixin, generic.TemplateView):
     template_name = 'featured/featured.html'
     extra_context = {'title':'Saved'}
-    pag = paginate_posts(12, 6)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['posts'] = Save.objects.filter(user=self.request.user)[:6]  
+        context['posts'] = Save.objects.filter(user=self.request.user)
         return context
 
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        context['pages'] = next(self.pag)
-        context['posts'] = Save.objects.filter(user=self.request.user)[:context['pages']]
-        return render(request, self.template_name, context=context)
+
+
 
 
 
 
 class HashTagPosts(SearchMixin, generic.TemplateView):
     template_name: str = 'featured/featured.html'
-    pag = paginate_posts(12,6)
     def get_context_data(self, **kwargs):
         h = self.kwargs['hashtag']
         context = super().get_context_data(**kwargs)
         tag = Tag.objects.get(title=h)
-        context['h_posts'] = Post.objects.filter(post_tags=tag)[:6] 
+        context['h_posts'] = Post.objects.filter(post_tags=tag)
         context['title'] = f'#{h}' 
         return context
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        h = self.kwargs['hashtag']
-        context['pages'] = next(self.pag)
-        context['h_posts'] = Post.objects.filter(post_tags=Tag.objects.get(title=h))[:context['pages']]
-        return render(request, self.template_name, context=context)
+
 
     
     
@@ -122,6 +115,11 @@ class FeaturedPostsDetail(SearchMixin, generic.TemplateView):
                 Like.objects.create(post=post, user=user)
             else:
                 Like.objects.filter(post=post, user=user).delete()
+
+        if 'complaint' in request.POST:
+            id = request.POST['complaint']
+            request_user = request.user.username
+            complaint.delay(id, request_user)
         return HttpResponseRedirect(reverse('saved_posts_detail'))
 
 
@@ -171,9 +169,10 @@ class PostDetailView(SearchMixin, generic.DetailView):
         
         if 'comment_button' in request.POST:
             comment = request.POST.get('comment') 
-            user = request.user
-            post = Post.objects.get(id=self.kwargs['pk'])  
-            Comment.objects.create(user=user, post=post, body=comment)
+            if comment.strip() != '':
+                user = request.user
+                post = Post.objects.get(id=self.kwargs['pk'])  
+                Comment.objects.create(user=user, post=post, body=comment)
         return redirect('detail_post_view', self.get_object().id)
 
 

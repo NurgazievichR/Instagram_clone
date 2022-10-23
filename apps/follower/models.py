@@ -3,7 +3,7 @@ from django.db import models
 from django.db import models
 
 from apps.user.models import CustomUser
-
+ 
 
 class Follower(models.Model):
     to_user = models.ForeignKey(CustomUser, related_name='subscribers', on_delete=models.CASCADE)
@@ -13,7 +13,7 @@ class Follower(models.Model):
     
 
     def __str__(self):
-        return f"{self.create_at} from {self.from_user} to {self.to_user}"
+        return f"Subscribe {self.create_at} from {self.from_user} to {self.to_user}"
 
     class Meta:
         ordering = ('-create_at',)  

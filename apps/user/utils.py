@@ -46,10 +46,5 @@ def get_id_by_username(username):
    return object.id
 
 
-def paginate_posts(a:int, b:int):
-    while True:
-        yield a
-        a+=b
-
 
 

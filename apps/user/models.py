@@ -15,12 +15,23 @@ class CustomUser(AbstractUser):
     last_activity= models.DateTimeField(default=timezone.now)
     views = models.IntegerField(default=0)
 
+
+    def is_online(self):
+        if timezone.now() - self.last_activity < timezone.timedelta(minutes=3):
+            return 'Online'
+
     def __str__(self):
         return self.username
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+
+
+
+
 
 
 class Activity(models.Model):

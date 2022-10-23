@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 
-from apps.post.views import FeaturedPosts
 
 
 urlpatterns = [
@@ -28,6 +27,7 @@ urlpatterns = [
     path('', include('apps.follower.urls')),
     path('', include('apps.direct.urls')),
     path('', include('apps.story.urls')),
+    
 ]
 
 handler404 = 'apps.user.views.page_not_found'

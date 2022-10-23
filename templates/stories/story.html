@@ -3,20 +3,77 @@
 {% block content %}
 
 
-<div class="slideshow-container">
+<div class="slideshow-container" style="padding-top: 1rem;">
 
   <!-- Full-width images with number and caption text -->
 
 
 
-  {% for story in stories %}
-
+{% for story in stories %}
 {% if story.file.url|slice:'-3:' in 'mp4mov' %}
-<video height="820px" autoplay controls src="{{ story.file.url }}"></video>
+
+
+
+
+
+
+
+
+
+
+
+<div style="display:flex; align-items:center;justify-content:center;">
   
+  {% if page_obj.has_previous %}
+  <a href="?page={{page_obj.previous_page_number }}">
+    <button style="padding: 5px 16px; background: #0d6efd; color: white; border: none; cursor: pointer; border-radius: 10px; font-size: 30px; margin-right: 1rem;"><-</button>
+  </a>
+  {% endif %}
+
+  <video style="margin: auto;" height="820px" autoplay controls src="{{ story.file.url }}"></video>
+
+  {% if page_obj.has_next %}
+  <a href="?page={{page_obj.next_page_number}}">
+    <button style="padding: 5px 16px; background: #0d6efd; color: white; border: none; cursor: pointer; border-radius: 10px; font-size: 30px; margin-left: 1rem;">></button>
+  </a>
+  {% endif %}
+
+</div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% else %}
-<img width="550px" src="{{ story.file.url }}" alt="...">
-  
+{% if page_obj.has_previous %}
+<a href="?page={{page_obj.previous_page_number }}">
+  <button style="padding: 5px 16px; background: #0d6efd; color: white; border: none; cursor: pointer; border-radius: 10px; font-size: 30px; margin-right: 1rem;"><-</button>
+</a>
+{% endif %}
+
+
+<img width="750px" src="{{ story.file.url }}" alt="...">
+
+{% if page_obj.has_next %}
+<a href="?page={{page_obj.next_page_number}}">
+  <button style="padding: 5px 16px; background: #0d6efd; color: white; border: none; cursor: pointer; border-radius: 10px; font-size: 30px; margin-left: 1rem;">-></button>
+</a>
+{% endif %}
   {% endif %}
 {% if story.user == request.user %}
 <form method="POST">
@@ -35,10 +92,10 @@
 <nav>
 
   
-  <ul style="display: flex;">
+  <ul style="display: flex; justify-content: center; padding-left: 0; padding-top: 1rem;">
     {% for p in page_obj.paginator.page_range %}
-      <li style="margin-left: 20px; list-style-type: none; font-size:large;">
-        <a href="?page={{ p }}">{{ p }}</a>
+      <li style="margin-left: 20px; list-style-type: none; font-size:large; display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; position: relative; background-color: black; border-radius: 100%; ">
+        <a href="?page={{ p }}" style="text-decoration: none; color: white; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">{{ p }}</a>
       </li>
     {% endfor %}
   </ul>

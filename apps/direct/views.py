@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
-from apps.follower.models import Follower
+from django.utils import timezone
 
 
 from apps.user.models import CustomUser
@@ -30,16 +30,27 @@ def inbox(request):
         directs = Message.objects.filter(user=request.user, reciepient=message['user'])
         len_direct = len(directs)
         directs.update(is_read=True)
+            
+
 
         for message in messages:
             if message['user'].username == active_direct:
                 message['unread'] = 0
-    context = {
+        if len(CustomUser.objects.filter(username=active_direct)) > 0:
+            recep = CustomUser.objects.get(username=active_direct)
+
+        
+        context = {
         'directs':directs,
         'messages': messages,
         'active_direct': active_direct,
         'profile': profile,
+        'recep':recep
+
+     
     }
+    else:
+        context={}
     
     return render(request, 'directs/direct.html', context)
 
@@ -52,6 +63,14 @@ def Directs(request, username):
     directs = Message.objects.filter(user=user, reciepient__username=username)  
     directs.update(is_read=True)
 
+    active_user = CustomUser.objects.get(username=username)
+
+    
+    
+
+
+
+
     for message in messages:
             if message['user'].username == username:
                 message['unread'] = 0
@@ -59,7 +78,11 @@ def Directs(request, username):
         'directs': directs,
         'messages': messages,
         'active_direct': active_direct,
+        'recep': active_user
     }
+
+
+    
     if 'search-button' in request.GET:
             finding_word = request.GET.get('search_word')
             title = 'Search - "'+finding_word+'"'
@@ -75,7 +98,7 @@ def SendDirect(request):
     from_user = request.user
     to_user_username = request.POST.get('to_user')
     body = request.POST.get('body')
-    if body != '':
+    if body.strip() != '':
         if request.method == "POST":
             to_user = CustomUser.objects.get(username=to_user_username)
             Message.sender_message(from_user, to_user, body)
@@ -84,30 +107,19 @@ def SendDirect(request):
         return redirect('message')
 
 
-def UserSearch(request):
-    query = request.GET.get('q')
-    context = {}
-    if query:
-        users = CustomUser.objects.filter(Q(username__icontains=query))
-
-        # Paginator
-        paginator = Paginator(users, 8)
-        page_number = request.GET.get('page')
-        users_paginator = paginator.get_page(page_number)
-
-        context = {
-            'users': users_paginator,
-            }
-
-    return render(request, 'directs/search.html', context)
 
 def NewConversation(request, username):
     from_user = request.user
-    body = ''
-    try:
-        to_user = CustomUser.objects.get(username=username)
-    except Exception as e:
-        return redirect('search-users')
+    body = '⠀'
+
+    to_user = CustomUser.objects.get(username=username)
+
     if from_user != to_user:
         Message.sender_message(from_user, to_user, body)
     return redirect('message')
+
+
+def delete_message(request, id, username):
+    message = Message.objects.get(id=id)
+    message.delete()
+    return redirect('directs', username )
